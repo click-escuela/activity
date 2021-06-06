@@ -55,5 +55,4 @@ public class Activity {
 
 	@Column(name = "description", nullable = false)
 	private String description;
-
 }
