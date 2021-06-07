@@ -15,6 +15,10 @@ import click.escuela.activity.model.Activity;
 @Component
 public class Mapper {
 
+	private Mapper() {
+
+	}
+
 	private static ModelMapper modelMapper = new ModelMapper();
 
 	public static Activity mapperToActivity(ActivityApi activityApi) {
@@ -35,10 +39,9 @@ public class Mapper {
 	}
 
 	public static List<ActivityDTO> mapperToActivitiesDTO(List<Activity> listActivites) {
-		 List<ActivityDTO> activityDTOList = new ArrayList<>();
-		 listActivites.stream().forEach(p -> activityDTOList.add(mapperToStudentDTO(p)));
-		 return activityDTOList;
+		List<ActivityDTO> activityDTOList = new ArrayList<>();
+		listActivites.stream().forEach(p -> activityDTOList.add(mapperToStudentDTO(p)));
+		return activityDTOList;
 	}
-
 
 }
