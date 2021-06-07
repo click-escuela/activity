@@ -27,7 +27,7 @@ import click.escuela.activity.service.impl.ActivityServiceImpl;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Mapper.class })
-public class GradeServiceTest {
+public class ActivityServiceTest {
 
 	@Mock
 	private ActivityRepository activityRepository;

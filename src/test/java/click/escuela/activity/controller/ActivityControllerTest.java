@@ -46,7 +46,7 @@ import click.escuela.activity.service.impl.ActivityServiceImpl;
 
 @EnableWebMvc
 @RunWith(MockitoJUnitRunner.class)
-public class GradeControllerTest {
+public class ActivityControllerTest {
 
 	private MockMvc mockMvc;
 
