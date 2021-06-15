@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -19,7 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import click.escuela.activity.api.ActivityApi;
 import click.escuela.activity.enumerator.ActivityMessage;
 import click.escuela.activity.enumerator.ActivityType;
-import click.escuela.activity.exception.TransactionException;
+import click.escuela.activity.exception.ActivityException;
 import click.escuela.activity.mapper.Mapper;
 import click.escuela.activity.model.Activity;
 import click.escuela.activity.repository.ActivityRepository;
@@ -52,15 +53,17 @@ public class ActivityServiceTest {
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
 				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString())
 				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
-
+		Optional<Activity> optional = Optional.of(activity);
+		
 		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
 		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
-
+		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
+		
 		ReflectionTestUtils.setField(activityServiceImpl, "activityRepository", activityRepository);
 	}
 
 	@Test
-	public void whenCreateIsOk() throws TransactionException {
+	public void whenCreateIsOk() throws ActivityException {
 		activityServiceImpl.create(activityApi);
 		verify(activityRepository).save(Mapper.mapperToActivity(activityApi));
 	}
@@ -68,9 +71,8 @@ public class ActivityServiceTest {
 	@Test
 	public void whenCreateIsError() {
 		Mockito.when(activityRepository.save(null)).thenThrow(IllegalArgumentException.class);
-
-		assertThatExceptionOfType(TransactionException.class).isThrownBy(() -> {
-			activityServiceImpl.create(Mockito.any());
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.create(null);
 		}).withMessage(ActivityMessage.CREATE_ERROR.getDescription());
 	}
 	
@@ -78,6 +80,19 @@ public class ActivityServiceTest {
 	public void whenGetAllIsOk() {
 		activityServiceImpl.findAll();
 		verify(activityRepository).findAll();
+	}
+	
+	@Test
+	public void whenDeleteIsOk() throws ActivityException{
+		activityServiceImpl.delete(id.toString());
+		verify(activityRepository).delete(activity);
+	}
+	
+	@Test
+	public void whenDeleteIsError(){
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.delete(UUID.randomUUID().toString());
+		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
 	}
 
 }
