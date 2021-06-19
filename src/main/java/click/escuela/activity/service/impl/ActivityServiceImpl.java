@@ -36,10 +36,18 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 		return Mapper.mapperToActivitiesDTO(activityRepository.findAll());
 	}
 
+	public void update(ActivityApi activityApi) throws ActivityException {
+		findById(activityApi.getId())
+				.ifPresent(activity -> activityRepository.save(Mapper.mapperToActivity(activity,activityApi)));
+	}
+
 	public void delete(String id) throws ActivityException {
-		Activity activity = Optional.of(activityRepository.findById(UUID.fromString(id))
-				.orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR))).get();
-		activityRepository.delete(activity);
+		findById(id).ifPresent(activity -> activityRepository.delete(activity));
+	}
+
+	public Optional<Activity> findById(String id) throws ActivityException {
+		return Optional.of(activityRepository.findById(UUID.fromString(id))
+				.orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR)));
 	}
 
 }
