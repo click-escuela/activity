@@ -6,7 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,12 +21,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -96,115 +94,94 @@ public class ActivityControllerTest {
 
 	@Test
 	public void whenCreateIsOk() throws JsonProcessingException, Exception {
-		String response = resultIsOK(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityMessage.CREATE_OK.name());
+		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityMessage.CREATE_OK.name());
 	}
 
 	@Test
 	public void whenCreateButNameEmpty() throws JsonProcessingException, Exception {
 		activityApi.setName(StringUtils.EMPTY);
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityValidation.NAME_EMPTY.getDescription());
+		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityValidation.NAME_EMPTY.getDescription());
 	}
 
 	@Test
 	public void whenCreateButSubjectEmpty() throws JsonProcessingException, Exception {
 		activityApi.setSubject(StringUtils.EMPTY);
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityValidation.SUBJECT_EMPTY.getDescription());
+		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityValidation.SUBJECT_EMPTY.getDescription());
 	}
 
 	@Test
 	public void whenCreateButDescriptionEmpty() throws JsonProcessingException, Exception {
 		activityApi.setDescription(StringUtils.EMPTY);
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityValidation.DESCRIPTION_EMPTY.getDescription());
+		assertThat(resultActivityApi(post(URL, schoolId)))
+				.contains(ActivityValidation.DESCRIPTION_EMPTY.getDescription());
 	}
 
 	@Test
 	public void whenCreateButCourseEmpty() throws JsonProcessingException, Exception {
 		activityApi.setCourseId(StringUtils.EMPTY);
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityValidation.COURSE_ID_EMPTY.getDescription());
+		assertThat(resultActivityApi(post(URL, schoolId)))
+				.contains(ActivityValidation.COURSE_ID_EMPTY.getDescription());
 	}
 
 	@Test
 	public void whenCreateButTypeEmpty() throws JsonProcessingException, Exception {
 		activityApi.setType(StringUtils.EMPTY);
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
+		String response = resultActivityApi(post(URL, schoolId));
 		assertThat(response).contains(ActivityValidation.TYPE_EMPTY.getDescription());
 	}
 
 	@Test
 	public void whenCreateButSchoolNull() throws JsonProcessingException, Exception {
 		activityApi.setSchoolId(null);
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityValidation.SCHOOL_ID_NULL.getDescription());
+		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityValidation.SCHOOL_ID_NULL.getDescription());
 	}
 
 	@Test
 	public void whenCreateErrorService() throws JsonProcessingException, Exception {
 		doThrow(new ActivityException(ActivityMessage.CREATE_ERROR)).when(activityService).create(Mockito.any());
-		String response = resultNotOk(
-				post(URL, schoolId).contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi))).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityMessage.CREATE_ERROR.getDescription());
+		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityMessage.CREATE_ERROR.getDescription());
 	}
 
 	@Test
 	public void whenGetAllIsOk() throws JsonProcessingException, Exception {
-		String response = resultGetOK(
-				get(URL+"/getAll", schoolId).contentType(MediaType.APPLICATION_JSON)).getResponse()
-						.getContentAsString();
-		List<ActivityDTO> results = mapper.readValue(response, new TypeReference<List<ActivityDTO>>(){});
-		assertThat(results.get(0).getId()).contains(id.toString());
+		assertThat(mapper
+				.readValue(resultActivityApi(get(URL + "/getAll", schoolId)), new TypeReference<List<ActivityDTO>>() {
+				}).get(0).getId()).contains(id.toString());
+	}
+
+	@Test
+	public void whenUpdateIsOk() throws JsonProcessingException, Exception {
+		activityApi.setId(id);
+		assertThat(resultActivityApi(put(URL, schoolId))).contains(ActivityMessage.UPDATE_OK.name());
+	}
+
+	@Test
+	public void whenUpdateIsError() throws JsonProcessingException, Exception {
+		doThrow(new ActivityException(ActivityMessage.UPDATE_ERROR)).when(activityService).update(Mockito.any());
+		assertThat(resultActivityApi(put(URL, schoolId))).contains(ActivityMessage.UPDATE_ERROR.getDescription());
 	}
 
 	@Test
 	public void whenDeleteIsOk() throws JsonProcessingException, Exception {
-		String response = resultIsOK(
-				delete(URL+"/{activityId}", schoolId, id).contentType(MediaType.APPLICATION_JSON)).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityMessage.DELETE_OK.name());
+		assertThat(resultActivityApi(delete(URL + "/{activityId}", schoolId, id)))
+				.contains(ActivityMessage.DELETE_OK.name());
 	}
 
 	@Test
 	public void whenDeleteErrorService() throws JsonProcessingException, Exception {
 		doThrow(new ActivityException(ActivityMessage.GET_ERROR)).when(activityService).delete(id);
-		String response = resultNotOk(
-				delete(URL+"/{activityId}", schoolId, id).contentType(MediaType.APPLICATION_JSON)).getResponse()
-						.getContentAsString();
-		assertThat(response).contains(ActivityMessage.GET_ERROR.getDescription());
+		assertThat(resultActivityApi(delete(URL + "/{activityId}", schoolId, id)))
+				.contains(ActivityMessage.GET_ERROR.getDescription());
 	}
 
 	private String toJson(final Object obj) throws JsonProcessingException {
 		return mapper.writeValueAsString(obj);
 	}
-	
-	private MvcResult resultIsOK(RequestBuilder requestBuilder) throws JsonProcessingException, Exception {
-		return mockMvc.perform(requestBuilder).andExpect(status().is2xxSuccessful()).andReturn();
+
+	private String resultActivityApi(MockHttpServletRequestBuilder requestBuilder)
+			throws JsonProcessingException, Exception {
+		return mockMvc.perform(requestBuilder.contentType(MediaType.APPLICATION_JSON).content(toJson(activityApi)))
+				.andReturn().getResponse().getContentAsString();
 	}
 
-	private MvcResult resultNotOk(RequestBuilder requestBuilder) throws JsonProcessingException, Exception {
-		return mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
-	}
-	
-	private MvcResult resultGetOK(RequestBuilder requestBuilder) throws JsonProcessingException, Exception {
-		return mockMvc.perform(requestBuilder).andExpect(status().is(HttpStatus.ACCEPTED.value())).andReturn();
-	}
-	
 }
