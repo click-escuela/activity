@@ -56,6 +56,7 @@ public class ActivityServiceTest {
 		Optional<Activity> optional = Optional.of(activity);
 		
 		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
+		Mockito.when(Mapper.mapperToActivity(activity, activityApi)).thenReturn(activity);
 		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
 		
@@ -74,6 +75,33 @@ public class ActivityServiceTest {
 		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
 			activityServiceImpl.create(null);
 		}).withMessage(ActivityMessage.CREATE_ERROR.getDescription());
+	}
+	
+	@Test
+	public void whenUpdateIsOk() throws ActivityException {
+		activityApi.setId(id.toString());
+		activityServiceImpl.update(activityApi);
+		verify(activityRepository).save(Mapper.mapperToActivity(activityApi));
+	}
+
+	@Test
+	public void whenUpdateIsError() {
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.update(new ActivityApi());
+		}).withMessage(ActivityMessage.UPDATE_ERROR.getDescription());
+	}
+	
+	@Test
+	public void whenFinByIdIsOk() throws ActivityException {
+		activityServiceImpl.findById(id.toString());
+		verify(activityRepository).findById(id);
+	}
+
+	@Test
+	public void whenFinByIdIsError() {
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.findById(UUID.randomUUID().toString());
+		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
 	}
 	
 	@Test

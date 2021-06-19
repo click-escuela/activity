@@ -37,8 +37,12 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 	}
 
 	public void update(ActivityApi activityApi) throws ActivityException {
-		findById(activityApi.getId())
-				.ifPresent(activity -> activityRepository.save(Mapper.mapperToActivity(activity,activityApi)));
+		try {
+			findById(activityApi.getId())
+					.ifPresent(activity -> activityRepository.save(Mapper.mapperToActivity(activity, activityApi)));
+		} catch (Exception e) {
+			throw new ActivityException(ActivityMessage.UPDATE_ERROR);
+		}
 	}
 
 	public void delete(String id) throws ActivityException {
