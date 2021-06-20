@@ -2,6 +2,7 @@ package click.escuela.activity.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ public class Mapper {
 
 	public static Activity mapperToActivity(ActivityApi activityApi) {
 		Activity activity = modelMapper.map(activityApi, Activity.class);
+		activity.setCourseId(UUID.fromString(activityApi.getCourseId()));
 		activity.setType(mapperToEnum(activityApi.getType()));
 		return activity;
 	}
