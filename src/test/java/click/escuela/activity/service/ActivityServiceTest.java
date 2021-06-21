@@ -73,7 +73,7 @@ public class ActivityServiceTest {
 	public void whenCreateIsError() {
 		Mockito.when(activityRepository.save(null)).thenThrow(IllegalArgumentException.class);
 		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
-			activityServiceImpl.create(null);
+			activityServiceImpl.create(new ActivityApi());
 		}).withMessage(ActivityMessage.CREATE_ERROR.getDescription());
 	}
 	
