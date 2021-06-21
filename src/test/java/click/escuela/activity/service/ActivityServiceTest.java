@@ -41,7 +41,7 @@ public class ActivityServiceTest {
 	private Integer schoolId;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws ActivityException {
 		PowerMockito.mockStatic(Mapper.class);
 
 		id = UUID.randomUUID();
