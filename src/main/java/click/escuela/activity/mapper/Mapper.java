@@ -33,8 +33,7 @@ public class Mapper {
 	}
 
 	public static ActivityDTO mapperToActivityDTO(Activity activity) {
-		ActivityDTO activityDTO = modelMapper.map(activity, ActivityDTO.class);
-		return activityDTO;
+		return modelMapper.map(activity, ActivityDTO.class);
 	}
 
 	public static List<ActivityDTO> mapperToActivitiesDTO(List<Activity> listActivites) {
