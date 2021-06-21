@@ -56,10 +56,8 @@ public class ActivityServiceTest {
 		Optional<Activity> optional = Optional.of(activity);
 		
 		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
-		Mockito.when(Mapper.mapperToActivityUpdate(activity, activityApi)).thenReturn(activity);
 		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
-		Mockito.when(Mapper.mapperToEnum(ActivityType.HOMEWORK.toString())).thenReturn(ActivityType.HOMEWORK);
 		
 		ReflectionTestUtils.setField(activityServiceImpl, "activityRepository", activityRepository);
 	}
@@ -80,6 +78,7 @@ public class ActivityServiceTest {
 	
 	@Test
 	public void whenUpdateIsOk() throws ActivityException {
+		Mockito.when(Mapper.mapperToActivityUpdate(activity, activityApi)).thenReturn(activity);
 		activityApi.setId(id.toString());
 		activityServiceImpl.update(activityApi);
 		verify(activityRepository).save(activity);
@@ -87,6 +86,7 @@ public class ActivityServiceTest {
 
 	@Test
 	public void whenUpdateIsError() {
+		Mockito.when(Mapper.mapperToActivityUpdate(activity, activityApi)).thenReturn(activity);
 		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
 			activityServiceImpl.update(new ActivityApi());
 		}).withMessage(ActivityMessage.UPDATE_ERROR.getDescription());
