@@ -67,7 +67,7 @@ public class ActivityControllerTest {
 	private final static String URL = "/school/{schoolId}/activity";
 
 	@Before
-	public void setup() throws TransactionException {
+	public void setup() throws ActivityException  {
 		mockMvc = MockMvcBuilders.standaloneSetup(activityController).setControllerAdvice(new Handler()).build();
 		mapper = new ObjectMapper().findAndRegisterModules().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 				.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false)

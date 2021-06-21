@@ -55,8 +55,8 @@ public class ActivityServiceTest {
 				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
 		Optional<Activity> optional = Optional.of(activity);
 		
-		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
+		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		
 		ReflectionTestUtils.setField(activityServiceImpl, "activityRepository", activityRepository);
 	}
