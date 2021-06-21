@@ -40,7 +40,6 @@ import click.escuela.activity.enumerator.ActivityMessage;
 import click.escuela.activity.enumerator.ActivityType;
 import click.escuela.activity.enumerator.ActivityValidation;
 import click.escuela.activity.exception.ActivityException;
-import click.escuela.activity.exception.TransactionException;
 import click.escuela.activity.mapper.Mapper;
 import click.escuela.activity.model.Activity;
 import click.escuela.activity.rest.ActivityController;

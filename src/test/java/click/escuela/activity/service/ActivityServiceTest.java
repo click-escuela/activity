@@ -123,5 +123,5 @@ public class ActivityServiceTest {
 			activityServiceImpl.delete(UUID.randomUUID().toString());
 		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
 	}
-
+	
 }
