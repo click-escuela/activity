@@ -29,7 +29,7 @@ public class Mapper {
 	}
 
 	public static ActivityType mapperToEnum(String type) {
-		return modelMapper.map(type, ActivityType.class);
+		return modelMapper.map(ActivityType.valueOf(type), ActivityType.class);
 	}
 
 	public static ActivityDTO mapperToActivityDTO(Activity activity) {

@@ -36,7 +36,6 @@ public class ActivityServiceTest {
 	private ActivityServiceImpl activityServiceImpl = new ActivityServiceImpl();
 	private ActivityApi activityApi;
 	private Activity activity;
-	private Activity activityUpdate;
 	private UUID id;
 	private UUID courseId;
 	private Integer schoolId;
@@ -55,9 +54,9 @@ public class ActivityServiceTest {
 				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString())
 				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
 		Optional<Activity> optional = Optional.of(activity);
-		activityUpdate = activity;
+		
 		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
-		Mockito.when(Mapper.mapperToActivity(activity,activityApi)).thenReturn(activityUpdate);
+		Mockito.when(Mapper.mapperToActivity(activity,activityApi)).thenReturn(activity);
 		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
 		
@@ -82,7 +81,7 @@ public class ActivityServiceTest {
 	public void whenUpdateIsOk() throws ActivityException {
 		activityApi.setId(id.toString());
 		activityServiceImpl.update(activityApi);
-		verify(activityRepository).save(activityUpdate);
+		verify(activityRepository).save(activity);
 	}
 
 	@Test
