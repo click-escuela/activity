@@ -42,7 +42,7 @@ public class Mapper {
 		return activityDTOList;
 	}
 
-	public static Activity mapperToActivity(Activity activity, ActivityApi activityApi) {
+	public static Activity mapperToActivityUpdate(Activity activity, ActivityApi activityApi) {
 		modelMapper.map(activityApi,activity);
 		activity.setCourseId(UUID.fromString(activityApi.getCourseId()));
 		activity.setType(mapperToEnum(activityApi.getType()));

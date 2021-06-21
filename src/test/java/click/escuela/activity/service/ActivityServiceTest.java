@@ -78,7 +78,7 @@ public class ActivityServiceTest {
 	
 	@Test
 	public void whenUpdateIsOk() throws ActivityException {
-		Mockito.when(Mapper.mapperToActivity(activity,activityApi)).thenReturn(activity);
+		Mockito.when(Mapper.mapperToActivityUpdate(activity,activityApi)).thenReturn(activity);
 		activityApi.setId(id.toString());
 		activityServiceImpl.update(activityApi);
 		verify(activityRepository).save(activity);
@@ -86,7 +86,7 @@ public class ActivityServiceTest {
 
 	@Test
 	public void whenUpdateIsError() {
-		Mockito.when(Mapper.mapperToActivity(activity,activityApi)).thenReturn(activity);
+		Mockito.when(Mapper.mapperToActivityUpdate(activity,activityApi)).thenReturn(activity);
 		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
 			activityServiceImpl.update(new ActivityApi());
 		}).withMessage(ActivityMessage.UPDATE_ERROR.getDescription());
