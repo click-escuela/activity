@@ -56,7 +56,7 @@ public class ActivityServiceTest {
 		Optional<Activity> optional = Optional.of(activity);
 		
 		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
-		Mockito.when(Mapper.mapperToActivity(activity, activityApi)).thenReturn(activity);
+		Mockito.when(Mapper.mapperToActivityUpdate(activity, activityApi)).thenReturn(activity);
 		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
 		
