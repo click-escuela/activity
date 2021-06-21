@@ -59,6 +59,7 @@ public class ActivityServiceTest {
 		Mockito.when(Mapper.mapperToActivityUpdate(activity, activityApi)).thenReturn(activity);
 		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
+		Mockito.when(Mapper.mapperToEnum(ActivityType.HOMEWORK.toString())).thenReturn(ActivityType.HOMEWORK);
 		
 		ReflectionTestUtils.setField(activityServiceImpl, "activityRepository", activityRepository);
 	}
