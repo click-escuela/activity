@@ -32,7 +32,7 @@ public class Mapper {
 		return modelMapper.map(type, ActivityType.class);
 	}
 
-	public static ActivityDTO mapperToStudentDTO(Activity activity) {
+	public static ActivityDTO mapperToActivityDTO(Activity activity) {
 		ActivityDTO activityDTO = modelMapper.map(activity, ActivityDTO.class);
 		activityDTO.setType(activity.getType().toString());
 		return activityDTO;
@@ -40,7 +40,7 @@ public class Mapper {
 
 	public static List<ActivityDTO> mapperToActivitiesDTO(List<Activity> listActivites) {
 		List<ActivityDTO> activityDTOList = new ArrayList<>();
-		listActivites.stream().forEach(p -> activityDTOList.add(mapperToStudentDTO(p)));
+		listActivites.stream().forEach(p -> activityDTOList.add(mapperToActivityDTO(p)));
 		return activityDTOList;
 	}
 

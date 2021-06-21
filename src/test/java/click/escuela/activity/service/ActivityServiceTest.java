@@ -66,7 +66,7 @@ public class ActivityServiceTest {
 	@Test
 	public void whenCreateIsOk() throws ActivityException {
 		activityServiceImpl.create(activityApi);
-		verify(activityRepository).save(Mapper.mapperToActivity(activityApi));
+		verify(activityRepository).save(activity);
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class ActivityServiceTest {
 	public void whenUpdateIsOk() throws ActivityException {
 		activityApi.setId(id.toString());
 		activityServiceImpl.update(activityApi);
-		verify(activityRepository).save(Mapper.mapperToActivity(activity,activityApi));
+		verify(activityRepository).save(activity);
 	}
 
 	@Test
