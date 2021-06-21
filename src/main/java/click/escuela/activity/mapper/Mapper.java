@@ -46,6 +46,7 @@ public class Mapper {
 
 	public static Activity mapperToActivity(Activity activity, ActivityApi activityApi) {
 		modelMapper.map(activityApi,activity);
+		activity.setCourseId(UUID.fromString(activityApi.getCourseId()));
 		activity.setType(mapperToEnum(activityApi.getType()));
 		return activity;
 	}

@@ -48,16 +48,16 @@ public class ActivityServiceTest {
 		courseId = UUID.randomUUID();
 		schoolId = 1234;
 		activity = Activity.builder().id(id).name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK).schoolId(schoolId).courseId(courseId).dueDate(LocalDate.now())
+				.type(Mapper.mapperToEnum(ActivityType.HOMEWORK.toString())).schoolId(schoolId).courseId(courseId).dueDate(LocalDate.now())
 				.description("Resolver todos los puntos").build();
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString())
+				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(String.valueOf(id))
 				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
 		Optional<Activity> optional = Optional.of(activity);
 		
+		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
 		Mockito.when(Mapper.mapperToActivity(activity,activityApi)).thenReturn(activity);
-		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
 		
 		ReflectionTestUtils.setField(activityServiceImpl, "activityRepository", activityRepository);
