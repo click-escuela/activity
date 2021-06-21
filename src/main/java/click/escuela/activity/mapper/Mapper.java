@@ -34,7 +34,6 @@ public class Mapper {
 
 	public static ActivityDTO mapperToActivityDTO(Activity activity) {
 		ActivityDTO activityDTO = modelMapper.map(activity, ActivityDTO.class);
-		activityDTO.setType(activity.getType().toString());
 		return activityDTO;
 	}
 
