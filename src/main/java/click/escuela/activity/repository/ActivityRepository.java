@@ -12,4 +12,6 @@ public interface ActivityRepository extends JpaRepository<Activity, UUID> {
 	public List<Activity> findBySchoolId(Integer schoolId);
 
 	public List<Activity> findByCourseId(UUID courseId);
+
+	public List<Activity> findByStudentId(UUID studentId);
 }

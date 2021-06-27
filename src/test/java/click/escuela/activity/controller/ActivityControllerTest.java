@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +62,7 @@ public class ActivityControllerTest {
 	private String id;
 	private String schoolId;
 	private String courseId;
+	private String studentId;
 	private final static String URL = "/school/{schoolId}/activity";
 
 	@Before
@@ -76,19 +76,24 @@ public class ActivityControllerTest {
 		id = UUID.randomUUID().toString();
 		schoolId = "1234";
 		courseId = UUID.randomUUID().toString();
+		studentId = UUID.randomUUID().toString();
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
 				.type(ActivityType.HOMEWORK.toString()).schoolId(Integer.valueOf(schoolId))
-				.courseId(courseId.toString()).dueDate(LocalDate.now()).description("Resolver todos los puntos")
+				.courseId(courseId.toString()).studentId(studentId).dueDate(LocalDate.now()).description("Resolver todos los puntos")
 				.build();
 		Activity activity = Activity.builder().id(UUID.fromString(id)).name("Historia de las catatumbas")
 				.subject("Historia").type(ActivityType.HOMEWORK).schoolId(Integer.valueOf(schoolId))
-				.courseId(UUID.fromString(courseId)).dueDate(LocalDate.now()).description("Resolver todos los puntos")
+				.courseId(UUID.fromString(courseId)).studentId(UUID.fromString(studentId)).dueDate(LocalDate.now()).description("Resolver todos los puntos")
 				.build();
 		List<Activity> activities = new ArrayList<>();
 		activities.add(activity);
 
 		doNothing().when(activityService).create(Mockito.any());
 		Mockito.when(activityService.findAll()).thenReturn(Mapper.mapperToActivitiesDTO(activities));
+		Mockito.when(activityService.getBySchool(schoolId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
+		Mockito.when(activityService.getByCourse(courseId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
+		Mockito.when(activityService.getByStudent(studentId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
+
 	}
 
 	@Test
@@ -121,6 +126,13 @@ public class ActivityControllerTest {
 		assertThat(resultActivityApi(post(URL, schoolId)))
 				.contains(ActivityValidation.COURSE_ID_EMPTY.getDescription());
 	}
+	
+	@Test
+	public void whenCreateButStudentEmpty() throws JsonProcessingException, Exception {
+		activityApi.setStudentId(StringUtils.EMPTY);
+		assertThat(resultActivityApi(post(URL, schoolId)))
+				.contains(ActivityValidation.STUDENT_ID_EMPTY.getDescription());
+	}
 
 	@Test
 	public void whenCreateButTypeEmpty() throws JsonProcessingException, Exception {
@@ -146,6 +158,45 @@ public class ActivityControllerTest {
 		assertThat(mapper
 				.readValue(resultActivityApi(get(URL + "/getAll", schoolId)), new TypeReference<List<ActivityDTO>>() {
 				}).get(0).getId()).contains(id.toString());
+	}
+
+	@Test
+	public void getBySchoolIdIsOk() throws JsonProcessingException, Exception {
+		assertThat(mapper.readValue(resultActivityApi(get(URL, schoolId)), new TypeReference<List<ActivityDTO>>() {
+		}).get(0).getId()).contains(id.toString());
+	}
+
+	@Test
+	public void getBySchoolIdIsEmpty() throws JsonProcessingException, Exception {
+		schoolId = "6666";
+		assertThat(mapper.readValue(resultActivityApi(get(URL, schoolId)), new TypeReference<List<ActivityDTO>>() {
+		})).isEmpty();
+	}
+	
+	@Test
+	public void getByCourseIdIsOk() throws JsonProcessingException, Exception {
+		assertThat(mapper.readValue(resultActivityApi(get(URL + "/course/{courseId}",  schoolId, courseId)), new TypeReference<List<ActivityDTO>>() {
+		}).get(0).getId()).contains(id.toString());
+	}
+
+	@Test
+	public void getByCourseIdIsEmpty() throws JsonProcessingException, Exception {
+		courseId = UUID.randomUUID().toString();
+		assertThat(mapper.readValue(resultActivityApi(get(URL + "/course/{courseId}",  schoolId, courseId)), new TypeReference<List<ActivityDTO>>() {
+		})).isEmpty();
+	}
+	
+	@Test
+	public void getByStudentIdIsOk() throws JsonProcessingException, Exception {
+		assertThat(mapper.readValue(resultActivityApi(get(URL + "/student/{studentId}",  schoolId, studentId)), new TypeReference<List<ActivityDTO>>() {
+		}).get(0).getId()).contains(id.toString());
+	}
+
+	@Test
+	public void getStudentIdIsEmpty() throws JsonProcessingException, Exception {
+		studentId = UUID.randomUUID().toString();
+		assertThat(mapper.readValue(resultActivityApi(get(URL + "/student/{studentId}",  schoolId, studentId)), new TypeReference<List<ActivityDTO>>() {
+		})).isEmpty();
 	}
 
 	@Test

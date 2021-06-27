@@ -60,7 +60,10 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 
 	public List<ActivityDTO> getByCourse(String courseId) {
 		return Mapper.mapperToActivitiesDTO(activityRepository.findByCourseId(UUID.fromString(courseId)));
-
+	}
+	
+	public List<ActivityDTO> getByStudent(String studentId) {
+		return Mapper.mapperToActivitiesDTO(activityRepository.findByStudentId(UUID.fromString(studentId)));
 	}
 
 }

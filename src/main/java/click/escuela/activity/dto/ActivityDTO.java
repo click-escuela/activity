@@ -22,6 +22,9 @@ public class ActivityDTO {
 
 	@JsonProperty(value = "course_id")
 	private UUID courseId;
+	
+	@JsonProperty(value = "student_id")
+	private UUID studentId;
 
 	@JsonProperty(value = "due_date")
 	private LocalDate dueDate;

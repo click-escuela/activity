@@ -58,6 +58,14 @@ public class ActivityController {
 			@Parameter(name = "Course Id", required = true) @PathVariable("courseId") String courseId) {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getByCourse(courseId));
 	}
+	
+	@Operation(summary = "Get activity by studentId", responses = {
+			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
+	@GetMapping(value = "student/{studentId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<List<ActivityDTO>> getByStudent(
+			@Parameter(name = "Course Id", required = true) @PathVariable("studentId") String studentId) {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getByStudent(studentId));
+	}
 
 
 	@Operation(summary = "Create Activity", responses = {
