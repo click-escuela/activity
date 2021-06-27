@@ -41,6 +41,24 @@ public class ActivityController {
 	public ResponseEntity<List<ActivityDTO>> getAllCourses() {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.findAll());
 	}
+	
+
+	@Operation(summary = "Get activity by schoolId", responses = {
+			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
+	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<List<ActivityDTO>> getBySchool(
+			@Parameter(name = "School Id", required = true) @PathVariable("schoolId") String schoolId) {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getBySchool(schoolId));
+	}
+	
+	@Operation(summary = "Get activity by courseId", responses = {
+			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
+	@GetMapping(value = "course/{courseId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<List<ActivityDTO>> getByCourse(
+			@Parameter(name = "Course Id", required = true) @PathVariable("courseId") String courseId) {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getByCourse(courseId));
+	}
+
 
 	@Operation(summary = "Create Activity", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json")) })
