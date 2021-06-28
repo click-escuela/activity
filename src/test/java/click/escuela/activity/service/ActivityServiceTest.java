@@ -117,6 +117,19 @@ public class ActivityServiceTest {
 	}
 	
 	@Test
+	public void whenGetByIdIsOk() throws ActivityException {
+		activityServiceImpl.getById(id.toString());
+		verify(activityRepository).findById(id);
+	}
+
+	@Test
+	public void whenGetByIdIsError() {
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.getById(UUID.randomUUID().toString());
+		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
+	}
+	
+	@Test
 	public void whenGetByCourseIdIsOk() {
 		activityServiceImpl.getByCourse(courseId.toString());
 		verify(activityRepository).findByCourseId(courseId);

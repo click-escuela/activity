@@ -90,6 +90,7 @@ public class ActivityControllerTest {
 
 		doNothing().when(activityService).create(Mockito.any());
 		Mockito.when(activityService.findAll()).thenReturn(Mapper.mapperToActivitiesDTO(activities));
+		Mockito.when(activityService.getById(id)).thenReturn(Mapper.mapperToActivityDTO(activity));
 		Mockito.when(activityService.getBySchool(schoolId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
 		Mockito.when(activityService.getByCourse(courseId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
 		Mockito.when(activityService.getByStudent(studentId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
@@ -158,6 +159,20 @@ public class ActivityControllerTest {
 		assertThat(mapper
 				.readValue(resultActivityApi(get(URL + "/getAll", schoolId)), new TypeReference<List<ActivityDTO>>() {
 				}).get(0).getId()).contains(id.toString());
+	}
+	
+	@Test
+	public void getByActivityIdIsOk() throws JsonProcessingException, Exception {
+		assertThat(mapper.readValue(resultActivityApi(get(URL + "/{activityId}", schoolId, id)),ActivityDTO.class)).hasFieldOrPropertyWithValue("id", id.toString());
+	}
+
+	@Test
+	public void getByActivityIdIsError() throws JsonProcessingException, Exception {
+		
+		id = UUID.randomUUID().toString();
+		doThrow(new ActivityException(ActivityMessage.GET_ERROR))
+		.when(activityService).getById(id.toString());
+		assertThat(resultActivityApi(get(URL + "/{activityId}", schoolId, id))).contains(ActivityMessage.GET_ERROR.getDescription());
 	}
 
 	@Test
