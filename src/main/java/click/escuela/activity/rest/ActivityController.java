@@ -43,6 +43,14 @@ public class ActivityController {
 	}
 	
 
+	@Operation(summary = "Get activity by ActivityId", responses = {
+			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
+	@GetMapping(value = "/{activityId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<ActivityDTO> getByActivity(
+			@Parameter(name = "Activity Id", required = true) @PathVariable("activityId") String activityId) throws ActivityException {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getById(activityId));
+	}
+	
 	@Operation(summary = "Get activity by schoolId", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })

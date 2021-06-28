@@ -66,4 +66,9 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 		return Mapper.mapperToActivitiesDTO(activityRepository.findByStudentId(UUID.fromString(studentId)));
 	}
 
+	public ActivityDTO getById(String activityId) throws ActivityException {
+		Activity activity = findById(activityId).orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR));
+		return Mapper.mapperToActivityDTO(activity);
+	}
+
 }
