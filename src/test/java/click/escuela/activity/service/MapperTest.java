@@ -28,11 +28,12 @@ public class MapperTest {
 
 	@InjectMocks
 	private Mapper mapper;
-	
+
 	private ActivityApi activityApi;
 	private Activity activity;
 	private UUID id;
 	private UUID courseId;
+	private UUID studentId;
 	private Integer schoolId;
 
 	@Before
@@ -40,13 +41,15 @@ public class MapperTest {
 
 		id = UUID.randomUUID();
 		courseId = UUID.randomUUID();
+		studentId = UUID.randomUUID();
 		schoolId = 1234;
 		activity = Activity.builder().id(id).name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK).schoolId(schoolId).courseId(courseId).dueDate(LocalDate.now())
-				.description("Resolver todos los puntos").build();
+				.type(ActivityType.HOMEWORK).schoolId(schoolId).courseId(courseId).studentId(studentId)
+				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
 				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString())
-				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
+				.studentId(studentId.toString()).dueDate(LocalDate.now()).description("Resolver todos los puntos")
+				.build();
 		Mockito.when(modelMapper.map(activityApi, Activity.class)).thenReturn(activity);
 		ReflectionTestUtils.setField(mapper, "modelMapper", modelMapper);
 
@@ -54,23 +57,21 @@ public class MapperTest {
 
 	@Test
 	public void whenMapperActivityIsOk() throws ActivityException {
-		Boolean hasTrue= true;
+		Boolean hasTrue = true;
 		try {
-		Mapper.mapperToActivity(activityApi);
-		}
-		catch(Exception e) {
+			Mapper.mapperToActivity(activityApi);
+		} catch (Exception e) {
 			hasTrue = false;
 		}
 		assertThat(hasTrue).isTrue();
 	}
-	
+
 	@Test
 	public void whenMapperActivityUpdateIsOk() throws ActivityException {
-		Boolean hasTrue= true;
+		Boolean hasTrue = true;
 		try {
-		Mapper.mapperToActivityUpdate(activity,activityApi);
-		}
-		catch(Exception e) {
+			Mapper.mapperToActivityUpdate(activity, activityApi);
+		} catch (Exception e) {
 			hasTrue = false;
 		}
 		assertThat(hasTrue).isTrue();

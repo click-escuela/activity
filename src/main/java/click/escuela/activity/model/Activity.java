@@ -42,6 +42,9 @@ public class Activity {
 
 	@Column(name = "course_id", columnDefinition = "BINARY(16)", nullable = false)
 	private UUID courseId;
+	
+	@Column(name = "student_id", columnDefinition = "BINARY(16)", nullable = false)
+	private UUID studentId;
 
 	@Column(name = "due_date", nullable = false, columnDefinition = "DATETIME")
 	private LocalDate dueDate;

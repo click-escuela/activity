@@ -38,8 +38,8 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 
 	public void update(ActivityApi activityApi) throws ActivityException {
 		try {
-			findById(activityApi.getId())
-					.ifPresent(activity -> activityRepository.save(Mapper.mapperToActivityUpdate(activity, activityApi)));
+			findById(activityApi.getId()).ifPresent(
+					activity -> activityRepository.save(Mapper.mapperToActivityUpdate(activity, activityApi)));
 		} catch (Exception e) {
 			throw new ActivityException(ActivityMessage.UPDATE_ERROR);
 		}
@@ -52,6 +52,23 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 	public Optional<Activity> findById(String id) throws ActivityException {
 		return Optional.of(activityRepository.findById(UUID.fromString(id))
 				.orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR)));
+	}
+
+	public List<ActivityDTO> getBySchool(String schoolId) {
+		return Mapper.mapperToActivitiesDTO(activityRepository.findBySchoolId(Integer.valueOf(schoolId)));
+	}
+
+	public List<ActivityDTO> getByCourse(String courseId) {
+		return Mapper.mapperToActivitiesDTO(activityRepository.findByCourseId(UUID.fromString(courseId)));
+	}
+	
+	public List<ActivityDTO> getByStudent(String studentId) {
+		return Mapper.mapperToActivitiesDTO(activityRepository.findByStudentId(UUID.fromString(studentId)));
+	}
+
+	public ActivityDTO getById(String activityId) throws ActivityException {
+		Activity activity = findById(activityId).orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR));
+		return Mapper.mapperToActivityDTO(activity);
 	}
 
 }
