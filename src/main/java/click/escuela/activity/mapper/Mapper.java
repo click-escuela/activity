@@ -23,25 +23,32 @@ public class Mapper {
 
 	public static Activity mapperToActivity(ActivityApi activityApi) {
 		Activity activity = modelMapper.map(activityApi, Activity.class);
-		activity.setType(mapperToEnum(activityApi.getType()));
 		activity.setCourseId(UUID.fromString(activityApi.getCourseId()));
+		activity.setStudentId(UUID.fromString(activityApi.getStudentId()));
+		activity.setType(mapperToEnum(activityApi.getType()));
 		return activity;
 	}
 
-	private static ActivityType mapperToEnum(String type) {
-		return modelMapper.map(type, ActivityType.class);
+	public static ActivityType mapperToEnum(String type) {
+		return modelMapper.map(ActivityType.valueOf(type), ActivityType.class);
 	}
 
-	public static ActivityDTO mapperToStudentDTO(Activity activity) {
-		ActivityDTO activityDTO = modelMapper.map(activity, ActivityDTO.class);
-		activityDTO.setType(activity.getType().toString());
-		return activityDTO;
+	public static ActivityDTO mapperToActivityDTO(Activity activity) {
+		return modelMapper.map(activity, ActivityDTO.class);
 	}
 
 	public static List<ActivityDTO> mapperToActivitiesDTO(List<Activity> listActivites) {
 		List<ActivityDTO> activityDTOList = new ArrayList<>();
-		listActivites.stream().forEach(p -> activityDTOList.add(mapperToStudentDTO(p)));
+		listActivites.stream().forEach(p -> activityDTOList.add(mapperToActivityDTO(p)));
 		return activityDTOList;
+	}
+
+	public static Activity mapperToActivityUpdate(Activity activity, ActivityApi activityApi) {
+		modelMapper.map(activityApi,activity);
+		activity.setCourseId(UUID.fromString(activityApi.getCourseId()));
+		activity.setStudentId(UUID.fromString(activityApi.getStudentId()));
+		activity.setType(mapperToEnum(activityApi.getType()));
+		return activity;
 	}
 
 }

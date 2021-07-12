@@ -1,9 +1,12 @@
 package click.escuela.activity.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +21,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import click.escuela.activity.api.ActivityApi;
+import click.escuela.activity.dto.ActivityDTO;
 import click.escuela.activity.enumerator.ActivityMessage;
 import click.escuela.activity.enumerator.ActivityType;
 import click.escuela.activity.exception.ActivityException;
@@ -38,42 +42,130 @@ public class ActivityServiceTest {
 	private Activity activity;
 	private UUID id;
 	private UUID courseId;
+	private UUID studentId;
 	private Integer schoolId;
+	private List<Activity> activities = new ArrayList<>();
 
 	@Before
-	public void setUp() {
+	public void setUp() throws ActivityException {
 		PowerMockito.mockStatic(Mapper.class);
 
 		id = UUID.randomUUID();
 		courseId = UUID.randomUUID();
+		studentId = UUID.randomUUID();
 		schoolId = 1234;
 		activity = Activity.builder().id(id).name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK).schoolId(schoolId).courseId(courseId).dueDate(LocalDate.now())
+				.type(ActivityType.HOMEWORK).schoolId(schoolId).courseId(courseId).studentId(studentId).dueDate(LocalDate.now())
 				.description("Resolver todos los puntos").build();
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString())
+				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString()).studentId(studentId.toString())
 				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
 		Optional<Activity> optional = Optional.of(activity);
+		activities.add(activity);
 		
-		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
-		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
 		Mockito.when(activityRepository.findById(id)).thenReturn(optional);
+		Mockito.when(activityRepository.save(activity)).thenReturn(activity);
+		Mockito.when(activityRepository.findByCourseId(courseId)).thenReturn(activities);
+		Mockito.when(activityRepository.findBySchoolId(schoolId)).thenReturn(activities);
+		Mockito.when(activityRepository.findByStudentId(studentId)).thenReturn(activities);
 		
 		ReflectionTestUtils.setField(activityServiceImpl, "activityRepository", activityRepository);
 	}
 
 	@Test
 	public void whenCreateIsOk() throws ActivityException {
+		Mockito.when(Mapper.mapperToActivity(activityApi)).thenReturn(activity);
 		activityServiceImpl.create(activityApi);
-		verify(activityRepository).save(Mapper.mapperToActivity(activityApi));
+		verify(activityRepository).save(activity);
 	}
 
 	@Test
 	public void whenCreateIsError() {
 		Mockito.when(activityRepository.save(null)).thenThrow(IllegalArgumentException.class);
 		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
-			activityServiceImpl.create(null);
+			activityServiceImpl.create(new ActivityApi());
 		}).withMessage(ActivityMessage.CREATE_ERROR.getDescription());
+	}
+	
+	@Test
+	public void whenUpdateIsOk() throws ActivityException {
+		Mockito.when(Mapper.mapperToActivityUpdate(activity,activityApi)).thenReturn(activity);
+		activityApi.setId(id.toString());
+		activityServiceImpl.update(activityApi);
+		verify(activityRepository).save(activity);
+	}
+
+	@Test
+	public void whenUpdateIsError() {
+		Mockito.when(Mapper.mapperToActivityUpdate(activity,activityApi)).thenReturn(activity);
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.update(new ActivityApi());
+		}).withMessage(ActivityMessage.UPDATE_ERROR.getDescription());
+	}
+	
+	@Test
+	public void whenFinByIdIsOk() throws ActivityException {
+		activityServiceImpl.findById(id.toString());
+		verify(activityRepository).findById(id);
+	}
+
+	@Test
+	public void whenFinByIdIsError() {
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.findById(UUID.randomUUID().toString());
+		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
+	}
+	
+	@Test
+	public void whenGetByIdIsOk() throws ActivityException {
+		activityServiceImpl.getById(id.toString());
+		verify(activityRepository).findById(id);
+	}
+
+	@Test
+	public void whenGetByIdIsError() {
+		assertThatExceptionOfType(ActivityException.class).isThrownBy(() -> {
+			activityServiceImpl.getById(UUID.randomUUID().toString());
+		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
+	}
+	
+	@Test
+	public void whenGetByCourseIdIsOk() {
+		activityServiceImpl.getByCourse(courseId.toString());
+		verify(activityRepository).findByCourseId(courseId);
+	}
+
+	@Test
+	public void whenGetByCourseIsEmpty() {
+		courseId = UUID.randomUUID();
+		List<ActivityDTO> listEmpty = activityServiceImpl.getByCourse(UUID.randomUUID().toString());
+		assertThat(listEmpty).isEmpty();
+	}
+	
+	@Test
+	public void whenGetByStudentIdIsOk() {
+		activityServiceImpl.getByStudent(studentId.toString());
+		verify(activityRepository).findByStudentId(studentId);
+	}
+
+	@Test
+	public void whenGetByStudentIsEmpty() {
+		studentId = UUID.randomUUID();
+		List<ActivityDTO> listEmpty = activityServiceImpl.getByStudent(studentId.toString());
+		assertThat(listEmpty).isEmpty();
+	}
+	
+	@Test
+	public void whenGetBySchoolIdIsOk() throws ActivityException {
+		activityServiceImpl.getBySchool(schoolId.toString());
+		verify(activityRepository).findBySchoolId(schoolId);
+	}
+
+	@Test
+	public void whenGetBySchoolIdIsEmty() {
+		schoolId = 6666;
+		List<ActivityDTO> listEmpty = activityServiceImpl.getBySchool(schoolId.toString());
+		assertThat(listEmpty).isEmpty();
 	}
 	
 	@Test
@@ -94,5 +186,5 @@ public class ActivityServiceTest {
 			activityServiceImpl.delete(UUID.randomUUID().toString());
 		}).withMessage(ActivityMessage.GET_ERROR.getDescription());
 	}
-
+	
 }

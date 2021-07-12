@@ -40,9 +40,12 @@ public class ActivityApi {
 	private Integer schoolId;
 
 	@NotBlank(message = "Course Id cannot be empty")
-	@Size(max = 50, message = "Course Id must be less than 50 characters")
 	@JsonProperty(value = "courseId", required = true)
 	private String courseId;
+	
+	@NotBlank(message = "Student Id cannot be empty")
+	@JsonProperty(value = "studentId", required = true)
+	private String studentId;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@JsonProperty(value = "dueDate", required = true)
