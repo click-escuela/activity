@@ -57,7 +57,7 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 		findByIdAndSchoolId(id, schoolId).ifPresent(activity -> activityRepository.delete(activity));
 	}
 
-	public Optional<Activity> findByIdAndSchoolId(String id, String schoolId) throws ActivityException {
+	private Optional<Activity> findByIdAndSchoolId(String id, String schoolId) throws ActivityException {
 		return Optional.of(activityRepository.findByIdAndSchoolId(UUID.fromString(id), Long.valueOf(schoolId))
 				.orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR)));
 	}
