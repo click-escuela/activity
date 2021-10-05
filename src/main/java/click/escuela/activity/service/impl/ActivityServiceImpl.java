@@ -58,12 +58,12 @@ public class ActivityServiceImpl implements ActivityServiceGeneric<ActivityApi, 
 	}
 
 	private Optional<Activity> findByIdAndSchoolId(String id, String schoolId) throws ActivityException {
-		return Optional.of(activityRepository.findByIdAndSchoolId(UUID.fromString(id), Long.valueOf(schoolId))
+		return Optional.of(activityRepository.findByIdAndSchoolId(UUID.fromString(id), UUID.fromString(schoolId))
 				.orElseThrow(() -> new ActivityException(ActivityMessage.GET_ERROR)));
 	}
 
 	public List<ActivityDTO> getBySchool(String schoolId) {
-		return Mapper.mapperToActivitiesDTO(activityRepository.findBySchoolId(Long.valueOf(schoolId)));
+		return Mapper.mapperToActivitiesDTO(activityRepository.findBySchoolId(UUID.fromString(schoolId)));
 	}
 
 	public List<ActivityDTO> getByCourse(String courseId) {

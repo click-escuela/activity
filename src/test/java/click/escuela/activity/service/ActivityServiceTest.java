@@ -49,7 +49,7 @@ public class ActivityServiceTest {
 	private UUID id;
 	private UUID courseId;
 	private UUID studentId;
-	private Long schoolId;
+	private UUID schoolId;
 	private List<Activity> activities = new ArrayList<>();
 
 	@Before
@@ -59,7 +59,7 @@ public class ActivityServiceTest {
 		id = UUID.randomUUID();
 		courseId = UUID.randomUUID();
 		studentId = UUID.randomUUID();
-		schoolId = 1L;
+		schoolId = UUID.randomUUID();
 		School school = new School();
 		school.setId(schoolId);
 		activity = Activity.builder().id(id).name("Historia de las catatumbas").subject("Historia")
@@ -161,7 +161,7 @@ public class ActivityServiceTest {
 
 	@Test
 	public void whenGetBySchoolIdIsEmty() {
-		schoolId = 6L;
+		schoolId = UUID.randomUUID();
 		List<ActivityDTO> listEmpty = activityServiceImpl.getBySchool(schoolId.toString());
 		assertThat(listEmpty).isEmpty();
 	}

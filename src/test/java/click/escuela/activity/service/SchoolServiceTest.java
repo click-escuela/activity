@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,12 +28,12 @@ public class SchoolServiceTest {
 	
 	private SchoolServiceImpl schoolServiceImpl = new SchoolServiceImpl();
 	private School school;
-	private Long id;
+	private UUID id;
 
 	@Before
 	public void setUp() {
 
-		id = 1L;
+		id = UUID.randomUUID();
 		school = School.builder().id(id).name("Colegio Nacional").cellPhone("47589869")
 				.email("colegionacional@edu.gob.com").adress("Entre Rios 1418")
 				.build();
@@ -51,7 +53,7 @@ public class SchoolServiceTest {
 
 	@Test
 	public void whenGetByIdIsError() {
-		id = 2L;
+		id = UUID.randomUUID();
 		assertThatExceptionOfType(SchoolException.class).isThrownBy(() -> {
 			schoolServiceImpl.getById(id.toString());
 		}).withMessage(SchoolMessage.GET_ERROR.getDescription());

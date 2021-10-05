@@ -35,7 +35,7 @@ public class MapperTest {
 	private UUID id;
 	private UUID courseId;
 	private UUID studentId;
-	private Long schoolId;
+	private UUID schoolId;
 
 	@Before
 	public void setUp() throws ActivityException {
@@ -43,7 +43,7 @@ public class MapperTest {
 		id = UUID.randomUUID();
 		courseId = UUID.randomUUID();
 		studentId = UUID.randomUUID();
-		schoolId = 1L;
+		schoolId = UUID.randomUUID();
 		School school = new School();
 		school.setId(schoolId);
 		activity = Activity.builder().id(id).name("Historia de las catatumbas").subject("Historia")

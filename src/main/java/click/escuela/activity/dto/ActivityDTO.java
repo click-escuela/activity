@@ -18,7 +18,7 @@ public class ActivityDTO {
 	private String name;
 
 	@JsonProperty(value = "school_id")
-	private Long schoolId;
+	private UUID schoolId;
 
 	@JsonProperty(value = "course_id")
 	private UUID courseId;

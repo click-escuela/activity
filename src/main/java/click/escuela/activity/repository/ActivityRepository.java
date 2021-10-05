@@ -10,11 +10,11 @@ import click.escuela.activity.model.Activity;
 
 public interface ActivityRepository extends JpaRepository<Activity, UUID> {
 
-	public List<Activity> findBySchoolId(Long schoolId);
+	public List<Activity> findBySchoolId(UUID schoolId);
 
 	public List<Activity> findByCourseId(UUID courseId);
 
 	public List<Activity> findByStudentId(UUID studentId);
 	
-	public Optional<Activity> findByIdAndSchoolId(UUID id, Long schoolId);
+	public Optional<Activity> findByIdAndSchoolId(UUID id, UUID schoolId);
 }
