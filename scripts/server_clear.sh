@@ -5,4 +5,5 @@ sudo rm -rf /home/ec2-user/server/activity/activity-service.pid
 sudo rm -rf /home/ec2-user/server/activity/logs
 sudo rm -rf /home/ec2-user/server/activity/server_stop.sh
 sudo rm -rf /home/ec2-user/server/activity/fix_provileges.sh
+sudo rm -rf /home/ec2-user/server/activity/server_prestart.sh
 sudo rm -rf /home/ec2-user/server/activity/server_clear.sh
