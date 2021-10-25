@@ -2,6 +2,7 @@ package click.escuela.activity.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -34,7 +35,11 @@ public class Mapper {
 	}
 
 	public static ActivityDTO mapperToActivityDTO(Activity activity) {
-		return modelMapper.map(activity, ActivityDTO.class);
+		ActivityDTO activityDTO =  modelMapper.map(activity, ActivityDTO.class);
+		if(!Objects.isNull(activity.getCourseId())) activityDTO.setCourseId(activity.getCourseId().toString());
+		if(!Objects.isNull(activity.getStudentId())) activityDTO.setStudentId(activity.getStudentId().toString());
+		if(!Objects.isNull(activity.getSchool())) activityDTO.setSchoolId(activity.getSchool().getId().toString());
+		return activityDTO;
 	}
 
 	public static List<ActivityDTO> mapperToActivitiesDTO(List<Activity> listActivites) {

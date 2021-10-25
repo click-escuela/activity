@@ -1,7 +1,6 @@
 package click.escuela.activity.dto;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,13 +17,13 @@ public class ActivityDTO {
 	private String name;
 
 	@JsonProperty(value = "school_id")
-	private UUID schoolId;
+	private String schoolId;
 
 	@JsonProperty(value = "course_id")
-	private UUID courseId;
+	private String courseId;
 	
 	@JsonProperty(value = "student_id")
-	private UUID studentId;
+	private String studentId;
 
 	@JsonProperty(value = "due_date")
 	private LocalDate dueDate;
