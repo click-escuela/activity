@@ -6,7 +6,7 @@ import click.escuela.activity.exception.TransactionException;
 
 public interface ActivityServiceGeneric<T, S> {
 
-	public void create(T entity) throws TransactionException;
+	public void create(String id,T entity) throws TransactionException;
 
 	public List<S> findAll();
 }

@@ -39,6 +39,7 @@ import click.escuela.activity.enumerator.ActivityMessage;
 import click.escuela.activity.enumerator.ActivityType;
 import click.escuela.activity.enumerator.ActivityValidation;
 import click.escuela.activity.exception.ActivityException;
+import click.escuela.activity.exception.SchoolException;
 import click.escuela.activity.mapper.Mapper;
 import click.escuela.activity.model.Activity;
 import click.escuela.activity.rest.ActivityController;
@@ -66,7 +67,7 @@ public class ActivityControllerTest {
 	private final static String URL = "/school/{schoolId}/activity";
 
 	@Before
-	public void setup() throws ActivityException  {
+	public void setup() throws ActivityException, SchoolException {
 		mockMvc = MockMvcBuilders.standaloneSetup(activityController).setControllerAdvice(new Handler()).build();
 		mapper = new ObjectMapper().findAndRegisterModules().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 				.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, false)
@@ -74,23 +75,23 @@ public class ActivityControllerTest {
 		ReflectionTestUtils.setField(activityController, "activityService", activityService);
 
 		id = UUID.randomUUID().toString();
-		schoolId = "1234";
+		schoolId = "1";
 		courseId = UUID.randomUUID().toString();
 		studentId = UUID.randomUUID().toString();
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK.toString()).schoolId(Integer.valueOf(schoolId))
+				.type(ActivityType.HOMEWORK.toString())
 				.courseId(courseId.toString()).studentId(studentId).dueDate(LocalDate.now()).description("Resolver todos los puntos")
 				.build();
 		Activity activity = Activity.builder().id(UUID.fromString(id)).name("Historia de las catatumbas")
-				.subject("Historia").type(ActivityType.HOMEWORK).schoolId(Integer.valueOf(schoolId))
+				.subject("Historia").type(ActivityType.HOMEWORK)
 				.courseId(UUID.fromString(courseId)).studentId(UUID.fromString(studentId)).dueDate(LocalDate.now()).description("Resolver todos los puntos")
 				.build();
 		List<Activity> activities = new ArrayList<>();
 		activities.add(activity);
 
-		doNothing().when(activityService).create(Mockito.any());
+		doNothing().when(activityService).create(Mockito.anyString(), Mockito.any());
 		Mockito.when(activityService.findAll()).thenReturn(Mapper.mapperToActivitiesDTO(activities));
-		Mockito.when(activityService.getById(id)).thenReturn(Mapper.mapperToActivityDTO(activity));
+		Mockito.when(activityService.getById(id, schoolId)).thenReturn(Mapper.mapperToActivityDTO(activity));
 		Mockito.when(activityService.getBySchool(schoolId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
 		Mockito.when(activityService.getByCourse(courseId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
 		Mockito.when(activityService.getByStudent(studentId)).thenReturn(Mapper.mapperToActivitiesDTO(activities));
@@ -143,14 +144,8 @@ public class ActivityControllerTest {
 	}
 
 	@Test
-	public void whenCreateButSchoolNull() throws JsonProcessingException, Exception {
-		activityApi.setSchoolId(null);
-		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityValidation.SCHOOL_ID_NULL.getDescription());
-	}
-
-	@Test
 	public void whenCreateErrorService() throws JsonProcessingException, Exception {
-		doThrow(new ActivityException(ActivityMessage.CREATE_ERROR)).when(activityService).create(Mockito.any());
+		doThrow(new ActivityException(ActivityMessage.CREATE_ERROR)).when(activityService).create(Mockito.anyString(), Mockito.any());
 		assertThat(resultActivityApi(post(URL, schoolId))).contains(ActivityMessage.CREATE_ERROR.getDescription());
 	}
 
@@ -163,15 +158,15 @@ public class ActivityControllerTest {
 	
 	@Test
 	public void getByActivityIdIsOk() throws JsonProcessingException, Exception {
-		assertThat(mapper.readValue(resultActivityApi(get(URL + "/{activityId}", schoolId, id)),ActivityDTO.class)).hasFieldOrPropertyWithValue("id", id.toString());
+		assertThat(mapper.readValue(resultActivityApi(get(URL + "/{activityId}", schoolId, id)), ActivityDTO.class))
+				.hasFieldOrPropertyWithValue("id", id);
 	}
 
 	@Test
 	public void getByActivityIdIsError() throws JsonProcessingException, Exception {
-		
 		id = UUID.randomUUID().toString();
 		doThrow(new ActivityException(ActivityMessage.GET_ERROR))
-		.when(activityService).getById(id.toString());
+		.when(activityService).getById(id, schoolId);
 		assertThat(resultActivityApi(get(URL + "/{activityId}", schoolId, id))).contains(ActivityMessage.GET_ERROR.getDescription());
 	}
 
@@ -222,7 +217,7 @@ public class ActivityControllerTest {
 
 	@Test
 	public void whenUpdateIsError() throws JsonProcessingException, Exception {
-		doThrow(new ActivityException(ActivityMessage.UPDATE_ERROR)).when(activityService).update(Mockito.any());
+		doThrow(new ActivityException(ActivityMessage.UPDATE_ERROR)).when(activityService).update(Mockito.anyString(), Mockito.any());
 		assertThat(resultActivityApi(put(URL, schoolId))).contains(ActivityMessage.UPDATE_ERROR.getDescription());
 	}
 
@@ -234,7 +229,7 @@ public class ActivityControllerTest {
 
 	@Test
 	public void whenDeleteErrorService() throws JsonProcessingException, Exception {
-		doThrow(new ActivityException(ActivityMessage.GET_ERROR)).when(activityService).delete(id);
+		doThrow(new ActivityException(ActivityMessage.GET_ERROR)).when(activityService).delete(id, schoolId);
 		assertThat(resultActivityApi(delete(URL + "/{activityId}", schoolId, id)))
 				.contains(ActivityMessage.GET_ERROR.getDescription());
 	}

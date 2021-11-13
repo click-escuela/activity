@@ -19,6 +19,7 @@ import click.escuela.activity.enumerator.ActivityType;
 import click.escuela.activity.exception.ActivityException;
 import click.escuela.activity.mapper.Mapper;
 import click.escuela.activity.model.Activity;
+import click.escuela.activity.model.School;
 
 @RunWith(PowerMockRunner.class)
 public class MapperTest {
@@ -34,7 +35,7 @@ public class MapperTest {
 	private UUID id;
 	private UUID courseId;
 	private UUID studentId;
-	private Integer schoolId;
+	private UUID schoolId;
 
 	@Before
 	public void setUp() throws ActivityException {
@@ -42,12 +43,14 @@ public class MapperTest {
 		id = UUID.randomUUID();
 		courseId = UUID.randomUUID();
 		studentId = UUID.randomUUID();
-		schoolId = 1234;
+		schoolId = UUID.randomUUID();
+		School school = new School();
+		school.setId(schoolId);
 		activity = Activity.builder().id(id).name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK).schoolId(schoolId).courseId(courseId).studentId(studentId)
+				.type(ActivityType.HOMEWORK).school(school).courseId(courseId).studentId(studentId)
 				.dueDate(LocalDate.now()).description("Resolver todos los puntos").build();
 		activityApi = ActivityApi.builder().name("Historia de las catatumbas").subject("Historia")
-				.type(ActivityType.HOMEWORK.toString()).schoolId(schoolId).courseId(courseId.toString())
+				.type(ActivityType.HOMEWORK.toString()).courseId(courseId.toString())
 				.studentId(studentId.toString()).dueDate(LocalDate.now()).description("Resolver todos los puntos")
 				.build();
 		Mockito.when(modelMapper.map(activityApi, Activity.class)).thenReturn(activity);

@@ -20,6 +20,7 @@ import click.escuela.activity.api.ActivityApi;
 import click.escuela.activity.dto.ActivityDTO;
 import click.escuela.activity.enumerator.ActivityMessage;
 import click.escuela.activity.exception.ActivityException;
+import click.escuela.activity.exception.SchoolException;
 import click.escuela.activity.service.impl.ActivityServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,16 +42,17 @@ public class ActivityController {
 	public ResponseEntity<List<ActivityDTO>> getAllCourses() {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.findAll());
 	}
-	
 
 	@Operation(summary = "Get activity by ActivityId", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
 	@GetMapping(value = "/{activityId}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<ActivityDTO> getByActivity(
-			@Parameter(name = "Activity Id", required = true) @PathVariable("activityId") String activityId) throws ActivityException {
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getById(activityId));
+			@Parameter(name = "School Id", required = true) @PathVariable("schoolId") String schoolId,
+			@Parameter(name = "Activity Id", required = true) @PathVariable("activityId") String activityId)
+			throws ActivityException {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getById(activityId, schoolId));
 	}
-	
+
 	@Operation(summary = "Get activity by schoolId", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -58,7 +60,7 @@ public class ActivityController {
 			@Parameter(name = "School Id", required = true) @PathVariable("schoolId") String schoolId) {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getBySchool(schoolId));
 	}
-	
+
 	@Operation(summary = "Get activity by courseId", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
 	@GetMapping(value = "course/{courseId}", produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -66,7 +68,7 @@ public class ActivityController {
 			@Parameter(name = "Course Id", required = true) @PathVariable("courseId") String courseId) {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getByCourse(courseId));
 	}
-	
+
 	@Operation(summary = "Get activity by studentId", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class))) })
 	@GetMapping(value = "student/{studentId}", produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -75,22 +77,23 @@ public class ActivityController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(activityService.getByStudent(studentId));
 	}
 
-
 	@Operation(summary = "Create Activity", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json")) })
 	@PostMapping(value = "", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<ActivityMessage> create(@RequestBody @Validated ActivityApi activityApi)
-			throws ActivityException {
-		activityService.create(activityApi);
+	public ResponseEntity<ActivityMessage> create(
+			@Parameter(name = "School Id", required = true) @PathVariable("schoolId") String schoolId,
+			@RequestBody @Validated ActivityApi activityApi) throws ActivityException, SchoolException {
+		activityService.create(schoolId, activityApi);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(ActivityMessage.CREATE_OK);
 	}
 
 	@Operation(summary = "Update Activity", responses = {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json")) })
 	@PutMapping(value = "", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<ActivityMessage> update(@RequestBody @Validated ActivityApi activityApi)
-			throws ActivityException {
-		activityService.update(activityApi);
+	public ResponseEntity<ActivityMessage> update(
+			@Parameter(name = "School Id", required = true) @PathVariable("schoolId") String schoolId,
+			@RequestBody @Validated ActivityApi activityApi) throws ActivityException {
+		activityService.update(schoolId, activityApi);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(ActivityMessage.UPDATE_OK);
 	}
 
@@ -98,9 +101,10 @@ public class ActivityController {
 			@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json")) })
 	@DeleteMapping(value = "/{activityId}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<ActivityMessage> delete(
+			@Parameter(name = "School Id", required = true) @PathVariable("schoolId") String schoolId,
 			@Parameter(name = "Activity id", required = true) @PathVariable("activityId") String activityId)
 			throws ActivityException {
-		activityService.delete(activityId);
+		activityService.delete(activityId, schoolId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(ActivityMessage.DELETE_OK);
 	}
 
