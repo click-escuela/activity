@@ -5,3 +5,4 @@ chmod +x /home/ec2-user/server/activity/server_prestart.sh
 chmod +x /home/ec2-user/server/activity/server_stop.sh
 chmod +x /home/ec2-user/server/activity/server_clear.sh
 chmod +x /home/ec2-user/server/activity/fix_privileges.sh
+
